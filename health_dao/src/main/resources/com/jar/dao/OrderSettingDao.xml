@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.OrderSettingDao">
+    <!--通过预约日期找出OrderSetting对象-->
+    <select id="findByOrderDate" parameterType="java.util.Date" resultType="com.jar.pojo.OrderSetting">
+        select * from t_ordersetting where orderDate = #{orderDate}
+    </select>
+
+    <!--覆盖旧的OrderSetting对象-->
+    <update id="cover" parameterType="com.jar.pojo.OrderSetting">
+        update t_ordersetting set number = #{number} where orderDate = #{orderDate}
+    </update>
+
+    <!--添加新的OrderSetting-->
+    <insert id="add" parameterType="com.jar.pojo.OrderSetting">
+        insert into t_ordersetting(orderDate, number, reservations) values(#{orderDate}, #{number}, #{reservations})
+    </insert>
+
+    <!--按照指定日期范围内查询所有的OrderSetting对象-->
+    <select id="getOrderSettingBetweenDate" parameterType="java.lang.String" resultType="com.jar.pojo.OrderSetting">
+        SELECT * FROM t_ordersetting where orderDate BETWEEN #{beginDate} and #{endDate}
+    </select>
+
+    <!--设置新的预约人数-->
+    <update id="resetNumber" parameterType="com.jar.pojo.OrderSetting">
+        update t_ordersetting set number = #{number} where orderDate = #{orderDate}
+    </update>
+
+    <!--新增一个预约-->
+    <update id="editReservations" parameterType="com.jar.pojo.OrderSetting">
+        update t_ordersetting set reservations = reservations + 1 where orderDate = #{orderDate}
+    </update>
+</mapper>

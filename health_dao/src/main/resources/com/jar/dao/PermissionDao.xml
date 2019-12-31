@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.PermissionDao">
+    <select id="findByRoleId" parameterType="java.lang.Integer" resultType="com.jar.pojo.Permission">
+        select p.* from t_permission p, t_role r, t_role_permission rp
+        where r.id = #{id} and r.id = rp.role_id and p.id = rp.permission_id
+    </select>
+</mapper>

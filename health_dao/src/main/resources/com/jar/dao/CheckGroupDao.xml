@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.CheckGroupDao">
+    <!--新增检查组, 由于主键id是自动生成, 需要调用selectKey标签和LAST_INSERT_ID()语句-->
+    <insert id="add" parameterType="com.jar.pojo.CheckGroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_checkgroup(code, name, helpCode, sex, remark, attention)
+        values(#{code}, #{name}, #{helpCode}, #{sex}, #{remark}, #{attention})
+    </insert>
+    <!--添加检查项和检查组关系-->
+    <insert id="addItemAndGroup" parameterType="hashmap">
+        insert into t_checkgroup_checkitem(checkgroup_id, checkitem_id)
+        values(#{checkgroup_id}, #{checkitem_id})
+    </insert>
+
+    <!--分页查询-->
+    <select id="findPage" parameterType="java.lang.String" resultType="com.jar.pojo.CheckGroup">
+        select * from t_checkgroup
+        <where>
+            <if test="value != null and value.length > 0">
+              code like #{value} or name like #{value} or helpCode like #{value}
+            </if>
+        </where>
+    </select>
+
+    <!--根据id查找检查组-->
+    <select id="findById" parameterType="integer" resultType="com.jar.pojo.CheckGroup">
+        select * from t_checkgroup
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <!--用t_checkgroup_checkitem表格找出checkItem的id-->
+    <select id="getCheckItemIds" parameterType="integer" resultType="integer">
+        select checkitem_id from t_checkgroup_checkitem
+        <where>
+            checkgroup_id = #{checkgroup_id}
+        </where>
+    </select>
+    <!--修改检查组-->
+    <update id="update" parameterType="com.jar.pojo.CheckGroup">
+        update t_checkgroup set
+        code = #{code}, name = #{name}, helpCode = #{helpCode},
+        sex = #{sex}, remark = #{remark}, attention = #{attention}
+        <where>
+            id = #{id}
+        </where>
+    </update>
+    <!--查看该检查组是否被套餐关联-->
+    <select id="getCountFromPackage" parameterType="integer" resultType="integer">
+        select count(0) from t_package_checkgroup where checkgroup_id = #{checkgroup_id}
+    </select>
+
+    <!--查看该检查组是否与检查项关联-->
+    <select id="getCountFromItem" parameterType="integer" resultType="integer">
+        select count(0) from t_checkgroup_checkitem where checkgroup_id = #{checkgroup_id}
+    </select>
+
+    <!--删除检查组-->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_checkgroup where id = #{id}
+    </delete>
+
+    <!--查询所有检查组-->
+    <select id="findAll" resultType="com.jar.pojo.CheckGroup">
+        select * from t_checkgroup
+    </select>
+
+
+    
+</mapper>

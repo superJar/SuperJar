@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.UserDao">
+    <select id="findByUsername" parameterType="java.lang.String" resultType="com.jar.pojo.User">
+        select * from t_user where username = #{username}
+    </select>
+
+    <select id="findUserRolePermissionByUsername" parameterType="java.lang.String" resultMap="userRolePermissionResultMap">
+        select
+        u.id, u.username, u.password,
+        ur.role_id, r.keyword role_keyword,
+        rp.permission_id, p.keyword permission_keyword
+        from
+        t_user u, t_user_role ur, t_role r,
+        t_role_permission rp, t_permission p
+        where u.id = ur.user_id and ur.role_id = r.id
+        and rp.permission_id = p.id and u.username = #{username}
+    </select>
+    
+    <resultMap id="userRolePermissionResultMap" type="com.jar.pojo.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <collection property="roles" ofType="com.jar.pojo.Role">
+            <id column="role_id" property="id"/>
+            <result column="role_keyword" property="keyword"/>
+            <collection property="permissions" ofType="com.jar.pojo.Permission">
+                <id column="permission_id" property="id"/>
+                <result column="permission_keyword" property="keyword"/>
+            </collection>
+        </collection>
+
+    </resultMap>
+</mapper>

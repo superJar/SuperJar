@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.CheckItemDao">
+    <!--新增检查项-->
+    <insert id="addItem" parameterType="com.jar.pojo.CheckItem">
+        insert into t_checkitem(code, name, sex, age, price, type, attention, remark)
+        values(#{code}, #{name}, #{sex}, #{age}, #{price}, #{type}, #{attention}, #{remark})
+    </insert>
+
+    <!--模糊查询-->
+    <select id="findByCondition" parameterType="java.lang.String" resultType="com.jar.pojo.CheckItem">
+        select * from t_checkitem
+        <where>
+            <if test="value != null and value.length > 0">
+                name like #{value} or code like #{value}
+            </if>
+        </where>
+    </select>
+
+    <!--查找指定检查项-->
+    <select id="findById" parameterType="java.lang.Integer" resultType="com.jar.pojo.CheckItem">
+        select * from t_checkitem
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <!--编辑检查项-->
+    <update id="edit" parameterType="com.jar.pojo.CheckItem">
+        update t_checkitem set
+        code = #{code}, name = #{name}, sex = #{sex}, age = #{age},
+        price = #{price}, type =#{type}, attention = #{attention}, remark = #{remark}
+        where id = #{id}
+    </update>
+    
+    <!--查看检查项是否被引用-->
+    <select id="countByCheckItemId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(0) from t_checkgroup_checkitem
+        <where>
+            checkitem_id = #{id}
+        </where>
+    </select>
+
+    <!--删除检查项-->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_checkitem where id = #{id}
+    </delete>
+
+    <!--查询所有检查项-->
+    <select id="findAll" resultType="com.jar.pojo.CheckItem">
+        select * from t_checkitem
+    </select>
+</mapper>

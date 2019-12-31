@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jar.dao.OrderDao">
+    <!--根据条件查找对应的Order-->
+    <select id="findByCondition" parameterType="com.jar.pojo.Order" resultType="com.jar.pojo.Order">
+        select * from t_order
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="member_id != null">
+                and member_id = #{member_id}
+            </if>
+            <if test="orderDate != null">
+                and orderDate = #{orderDate}
+            </if>
+            <if test="orderType != null">
+                and orderType = #{orderType}
+            </if>
+            <if test="orderStatus">
+                and orderStatus = #{orderStatus}
+            </if>
+            <if test="package_id != null">
+                and package_id = #{package_id}
+            </if>
+        </where>
+    </select>
+
+    <!--添加一个新的Order-->
+    <insert id="add" parameterType="com.jar.pojo.Order">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into
+        t_order(member_id,orderDate,orderType,orderStatus,package_id)
+        values(#{member_id},#{orderDate},#{orderType},#{orderStatus},#{package_id})
+    </insert>
+
+
+    <!--根据Order.id找出package.name, member.name, order.orderDate, order.orderType-->
+    <select id="findById4Detail" parameterType="java.lang.Integer" resultType="java.util.Map">
+        select m.name member, p.name package, o.orderDate, o.orderType
+        from t_member m, t_package p, t_order o
+        where m.id=o.member_id and o.package_id=p.id and o.id = #{id}
+    </select>
+
+    <!--今日预约数-->
+    <select id="todayOrderNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order where orderDate = #{value}
+    </select>
+
+    <!--今日到访数-->
+    <select id="todayVisitsNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order where orderDate = #{value} and orderStatus = '已到诊'
+    </select>
+
+    <!--本周预约数-->
+    <select id="thisWeekOrderNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order where orderDate BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!--本周到访数-->
+    <select id="thisWeekVisitsNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order
+        where orderDate BETWEEN #{startDate} AND #{endDate} AND orderStatus = '已到诊'
+    </select>
+
+    <!--本月预约数-->
+    <select id="thisMonthOrderNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order where orderDate BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!--本月到访数-->
+    <select id="thisMonthVisitsNumber" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(0) from t_order where orderDate BETWEEN #{startDate} AND #{endDate} AND orderStatus = '已到诊'
+    </select>
+</mapper>
